@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 이 XML의 구조대로 구현될 클래스의 이름 => Impl클래스를 대체한다. -->
+<mapper namespace="StudentMapper">
+
+	<!-- Beans 클래스의 객체이름(id)과 클래스이름(type)을 명시한다. -->
+	<resultMap id="Student"
+		type="study.spring.myschool.model.Student">
+		<!-- Beans의 멤버변수(property)이름과 대상 테이블의 컬럼(column)을 연결한다. -->
+		<result property="studno" column="studno" />
+		<result property="name" column="name" />
+		<result property="userid" column="userid" />
+		<result property="grade" column="grade" />
+		<result property="idnum" column="idnum" />
+		<result property="birthdate" column="birthdate" />
+		<result property="tel" column="tel" />
+		<result property="height" column="height" />
+		<result property="weight" column="weight" />
+		<result property="deptno" column="deptno" />
+		<result property="profno" column="profno" />
+
+	</resultMap>
+
+	<!-- 데이터 저장을 위한 기능 정의 <insert id="메서드이름에 해당하는 식별자" parameterType="파라미터의 
+		데이터 타입(Beans의 클래스명)" useGeneratedKeys="자동증가 일련번호값 리턴 여부" keyProperty="자동증가 
+		일련번호 컬럼명"> -->
+	<insert id="add_Student"
+		parameterType="study.spring.myschool.model.Student"
+		useGeneratedKeys="true" keyProperty="studno">
+		<!-- "#{변수명}" 으로 표시된 곳에 Beans의 멤버변수가 치환된다. -->
+		INSERT INTO Student (
+		name, userid, grade, idnum, birthdate,
+		tel, height, weight, deptno, profno
+		) VALUES (
+		#{name},
+		#{userid},
+		#{grade},
+		#{idnum},
+		#{birthdate},
+		#{tel},
+		#{height},
+		#{weight},
+		#{deptno},
+		#{profno}
+		)
+	</insert>
+
+	<!-- 데이터 삭제를 위한 기능 정의 <delete id="메서드이름에 해당하는 식별자" parameterType="파라미터의 
+		데이터 타입(Beans의 클래스명)"> -->
+	<delete id="delete_Student"
+		parameterType="study.spring.myschool.model.Student">
+		<!-- "#{변수명}" 으로 표시된 곳에 Beans의 멤버변수가 치환된다. -->
+		DELETE FROM Student WHERE studno=#{studno}
+	</delete>
+
+	<!-- 데이터 갱신을 위한 기능 정의 <update id="메서드이름에 해당하는 식별자" parameterType="파라미터의 
+		데이터 타입(Beans의 클래스명)"> -->
+	<update id="edit_Student"
+		parameterType="study.spring.myschool.model.Student">
+		<!-- "#{변수명}" 으로 표시된 곳에 Beans의 멤버변수가 치환된다. -->
+		UPDATE Student SET name=#{name}, grade=#{grade}
+		WHERE studno=#{studno}
+	</update>
+
+	<!-- 단일행 조회를 위한 기능 정의 <select id="메서드이름에 해당하는 식별자" parameterType="파라미터의 
+		데이터 타입(Beans의 클래스명)" resultMap="리턴될 Beans이름"> -->
+	<select id="getStudent_Item"
+		parameterType="study.spring.myschool.model.Student"
+		resultMap="Student">
+		<!-- "#{변수명}" 으로 표시된 곳에 멤버변수가 치환된다. -->
+		SELECT studno,
+		name,
+		userid,
+		grade,
+		idnum,
+		birthdate,
+		tel,
+		height,
+		weight,
+		deptno,
+		profno
+		FROM Student WHERE studno=#{studno}
+	</select>
+
+	<!-- 다중행 조회를 위한 기능 정의 <select id="메서드이름에 해당하는 식별자" resultMap="리턴될 Beans이름"> -->
+	<select id="getStudent_List"
+		parameterType="study.spring.myschool.model.Student"
+		resultMap="Student">
+		<!-- 이 안에서 처리할 SQL문을 명시한다. -->
+		SELECT studno,
+		name,
+		userid,
+		grade,
+		idnum,
+		birthdate,
+		tel,
+		height,
+		weight,
+		deptno,
+		profno FROM Student
+
+	<!-- 	<where>
+			<if test="name != null and name != ''">
+				name LIKE concat('%', #{name}, '%')
+			</if>
+		</where> -->
+		
+		<!-- list 로 조회된 전체목록에대한 limitStart listCount 로 출력목록 제한걸어서 페이지 개수를 구현함. -->
+	<!-- 	ORDER BY profno DESC
+		LIMIT #{limitStart}, #{listCount} -->
+		
+	</select>
+
+
+	<!-- 조인 결과에 대한 전체 데이터 수 얻기 -->
+	<select id="selectStudentCount"
+		parameterType="study.spring.myschool.model.Student" resultType="int">
+		SELECT count(studno)
+		FROM student INNER JOIN department ON
+		student.deptno=department.deptno
+		<where>
+			<if test="name != null and name != ''">
+				name LIKE concat('%', #{name}, '%')
+			</if>
+		</where>
+
+	</select>
+</mapper>
